@@ -7,9 +7,11 @@ services:
     build:
       context: ../
       dockerfile: .devcontainer/Dockerfile
+      args:
+        USERNAME: ${USERNAME:-ubuntu}
     
     # コンテナにログインするデフォルトのユーザ
-    # user: ${USERNAME:-dev}
+    user: ${USERNAME:-ubuntu}
     
     # buildと併用してimageを指定すると、buildが優先されて作成されたimageに明示的な名前を付けられる
     image: ${DOCKERHUB_ACCOUNTNAME}/${IMAGENAME:-chris-minedojo}

@@ -1,28 +1,18 @@
 # Python3.9以上で利用するため、nvidia/cudaから利用
-FROM nvcr.io/nvidia/pytorch:24.11-py3-igpu
+FROM nvcr.io/nvidia/pytorch:24.11-py3
 
-# # software-properties-commonなどをインストール時にタイムゾーンを聞かれて停止するため、タイムゾーンをインストールしておく
-# # sudoでroot権限へ昇格するときに環境変数が引き継がれないので、sudoに-Eオプションを入れる
-# RUN DEBIAN_FRONTEND=noninteractive sudo -E apt install -y tzdata
+# sudoを利用できるようにする
+RUN apt-get update -y
+RUN apt-get install sudo -y
 
-# === JupyterLab ===
-RUN python -m pip install \
-    ipywidgets \
-    jupyterlab \
-    matplotlib \
-    nodejs \
-    opencv-python \
-    pandas \
-    scikit-learn \
-    seaborn \
-    sympy \
-    tqdm
+ARG USERNAME=ubuntu
 
-# jupyter lab コマンドへのパスを通す
-# RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
+# ユーザーのパスワードがわからないので、ユーザー名で再設定
+RUN echo $USERNAME:$USERNAME | chpasswd
+USER $USERNAME
 
 # 起動時のスクリプトをコピー
 COPY --chmod=755 .devcontainer/start_up.sh /usr/local/bin/
 
 # コンテナ起動時にjupyter_notebookを起動
-CMD ["/usr/local/bin/start_up.sh"]
+CMD ["sh", "/usr/local/bin/start_up.sh"]
